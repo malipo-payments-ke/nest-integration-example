@@ -148,7 +148,9 @@ export class AppService implements OnApplicationBootstrap {
     }
   }
 
-  async initiateSTKPush(payload: STKPushPayload): Promise<Record<string, unknown>> {
+  async initiateSTKPush(
+    payload: STKPushPayload,
+  ): Promise<Record<string, unknown>> {
     if (!this.apiKey || !this.apiSecret) {
       throw new InternalServerErrorException(
         'Malipo public API credentials are not set. Check your .env file.',
@@ -201,7 +203,10 @@ export class AppService implements OnApplicationBootstrap {
     }
   }
 
-  async generateQRCode(amount: number, description?: string): Promise<Record<string, unknown>> {
+  async generateQRCode(
+    amount: number,
+    description?: string,
+  ): Promise<Record<string, unknown>> {
     if (!this.apiKey || !this.apiSecret) {
       throw new InternalServerErrorException(
         'Malipo credentials are not configured.',
@@ -242,7 +247,11 @@ export class AppService implements OnApplicationBootstrap {
     }
   }
 
-  async simulateC2B(amount: number, phone: string, billRef: string): Promise<Record<string, unknown>> {
+  async simulateC2B(
+    amount: number,
+    phone: string,
+    billRef: string,
+  ): Promise<Record<string, unknown>> {
     if (!this.apiKey || !this.apiSecret) {
       throw new InternalServerErrorException(
         'Malipo credentials are not configured.',
@@ -285,7 +294,11 @@ export class AppService implements OnApplicationBootstrap {
     }
   }
 
-  async withdrawFunds(amount: number, phone: string, reason?: string): Promise<Record<string, unknown>> {
+  async withdrawFunds(
+    amount: number,
+    phone: string,
+    reason?: string,
+  ): Promise<Record<string, unknown>> {
     if (!this.apiKey || !this.apiSecret) {
       throw new InternalServerErrorException(
         'Malipo credentials are not configured.',
