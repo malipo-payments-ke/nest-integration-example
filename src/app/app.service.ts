@@ -28,6 +28,7 @@ export class AppService implements OnApplicationBootstrap {
   private webhookSecret = process.env.MALIPO_WEBHOOK_SECRET || '';
 
   constructor(private readonly httpService: HttpService) {
+    
     if (!this.apiKey || !this.apiSecret) {
       this.logger.warn(
         '⚠️ MALIPO_API_KEY or MALIPO_API_SECRET is not configured in the environment!',
@@ -38,6 +39,14 @@ export class AppService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
+    console.log('Initializing AppService with the following configuration:');
+    console.log(`- API URL: ${this.apiUrl}`);
+    console.log(
+      `- Webhook URL: ${
+        this.webhookUrl ? this.webhookUrl : 'Not configured (skipping auto-registration)'
+      }`,
+    );
+    console.log(`- Webhook Secret: ${this.webhookSecret ? 'Configured' : 'Not configured'}`);
     // Automatically register webhook if MALIPO_WEBHOOK_URL is configured
     if (this.webhookUrl) {
       this.logger.log(
