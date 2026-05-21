@@ -7,7 +7,10 @@ import {
   HttpStatus,
   UnauthorizedException,
   Logger,
+  Req,
+  RawBodyRequest,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AppService } from './app.service';
 
 @Controller('webhooks')
@@ -19,10 +22,13 @@ export class WebhookController {
   @Post('malipo')
   @HttpCode(HttpStatus.OK)
   async handleWebhook(
-    @Body() body: any,
+    @Req() req: RawBodyRequest<Request>,
     @Headers('x-webhook-signature') signature: string,
     @Headers('x-webhook-event') eventType: string
   ) {
+    const body = req.body;
+    const rawBody = req.rawBody?.toString('utf8') || '';
+
     const event = body.event || eventType;
     this.logger.log(`📥 Received Webhook Event: "${event}"`);
 
@@ -41,7 +47,7 @@ export class WebhookController {
       throw new UnauthorizedException('Missing signature header');
     }
 
-    const isValid = this.appService.verifyWebhookSignature(body, signature);
+    const isValid = this.appService.verifyWebhookSignature(rawBody, signature);
     if (!isValid) {
       this.logger.error('❌ Webhook signature verification failed! Untrusted payload rejected.');
       throw new UnauthorizedException('Invalid webhook signature');

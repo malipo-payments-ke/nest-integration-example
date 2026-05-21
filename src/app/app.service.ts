@@ -123,7 +123,7 @@ export class AppService implements OnApplicationBootstrap {
   /**
    * Verifies the authenticity of webhook requests from Malipo Gateway
    */
-  verifyWebhookSignature(body: any, signature: string): boolean {
+  verifyWebhookSignature(rawBody: string, signature: string): boolean {
     if (!this.webhookSecret) {
       this.logger.warn(
         '⚠️ Webhook secret is not set yet. Skipping signature validation (unsafe).',
@@ -132,10 +132,9 @@ export class AppService implements OnApplicationBootstrap {
     }
 
     try {
-      const payloadStr = JSON.stringify(body);
       const computedSignature = crypto
         .createHmac('sha256', this.webhookSecret)
-        .update(payloadStr)
+        .update(rawBody)
         .digest('hex');
 
       return crypto.timingSafeEqual(
