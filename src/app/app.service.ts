@@ -43,6 +43,24 @@ export class AppService implements OnApplicationBootstrap {
       this.logger.log(
         `🔄 Detecting Webhook URL configured: ${this.webhookUrl}`,
       );
+
+      // Warn if webhook URL is localhost but API is remote
+      const isWebhookLocal =
+        this.webhookUrl.includes('localhost') ||
+        this.webhookUrl.includes('127.0.0.1');
+      const isApiRemote =
+        this.apiUrl &&
+        !this.apiUrl.includes('localhost') &&
+        !this.apiUrl.includes('127.0.0.1');
+
+      if (isWebhookLocal && isApiRemote) {
+        this.logger.warn(
+          `⚠️  WARNING: Your webhook URL (${this.webhookUrl}) points to localhost, but your API (${this.apiUrl}) is remote. ` +
+            `The API server will NOT be able to reach localhost to deliver webhooks. ` +
+            `Use a tunnel (ngrok, cloudflared) or a public URL instead.`,
+        );
+      }
+
       // Wait slightly for the NestJS server to be fully up and listening to ports
       setTimeout(async () => {
         try {
