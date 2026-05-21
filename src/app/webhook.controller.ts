@@ -1,30 +1,19 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Headers,
-  HttpCode,
-  HttpStatus,
-  UnauthorizedException,
-  Logger,
-  Req,
-  RawBodyRequest,
-} from '@nestjs/common';
+import * as common from '@nestjs/common';
 import { Request } from 'express';
 import { AppService } from './app.service';
 
-@Controller('webhooks')
+@common.Controller('webhooks')
 export class WebhookController {
-  private readonly logger = new Logger(WebhookController.name);
+  private readonly logger = new common.Logger(WebhookController.name);
 
   constructor(private readonly appService: AppService) {}
 
-  @Post('malipo')
-  @HttpCode(HttpStatus.OK)
-  async handleWebhook(
-    @Req() req: RawBodyRequest<Request>,
-    @Headers('x-webhook-signature') signature: string,
-    @Headers('x-webhook-event') eventType: string
+  @common.Post('malipo')
+  @common.HttpCode(common.HttpStatus.OK)
+  handleWebhook(
+    @common.Req() req: common.RawBodyRequest<Request>,
+    @common.Headers('x-webhook-signature') signature: string,
+    @common.Headers('x-webhook-event') eventType: string
   ) {
     const body = req.body;
     const rawBody = req.rawBody?.toString('utf8') || '';
@@ -44,13 +33,13 @@ export class WebhookController {
     // 2. Validate webhook signature for transactional events
     if (!signature) {
       this.logger.warn('❌ Rejecting webhook request: Missing X-Webhook-Signature header.');
-      throw new UnauthorizedException('Missing signature header');
+      throw new common.UnauthorizedException('Missing signature header');
     }
 
     const isValid = this.appService.verifyWebhookSignature(rawBody, signature);
     if (!isValid) {
       this.logger.error('❌ Webhook signature verification failed! Untrusted payload rejected.');
-      throw new UnauthorizedException('Invalid webhook signature');
+      throw new common.UnauthorizedException('Invalid webhook signature');
     }
 
     // 3. Process webhook event
